@@ -37,6 +37,7 @@
             z-index: 10000;
         }
     </style>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
 </head>
 <body>
     <div class="cursor-follower" id="cursor"></div>
@@ -54,7 +55,7 @@
     <nav class="navbar">
         <div class="nav-inner">
             <div class="logo-area">
-                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="AI Food Advisor Logo" class="nav-logo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="logo-text">AI Food Advisor</span>
             </div>
             <div class="nav-links">
