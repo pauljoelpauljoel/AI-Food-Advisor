@@ -8,7 +8,12 @@ try:
 except ImportError:
     psycopg2 = None
 
+print("--- STARTING APP ---")
 DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    print(f"DATABASE_URL detected: {DATABASE_URL[:15]}...")
+else:
+    print("NO DATABASE_URL DETECTED")
 
 app = Flask(__name__)
 DB_PATH = "food.db"
