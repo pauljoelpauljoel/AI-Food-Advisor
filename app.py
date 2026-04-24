@@ -610,5 +610,13 @@ def generate_refinement_groq(prompt):
     data = r.json()
     return data["choices"][0]["message"]["content"]
 
+# ── Initialization ─────────────────────────────────────────────────────────────
+try:
+    print("Initializing Database...")
+    init_db()
+    print("Database Initialized Successfully.")
+except Exception as e:
+    print(f"DATABASE INITIALIZATION ERROR: {e}")
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
