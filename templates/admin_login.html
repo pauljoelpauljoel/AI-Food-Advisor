@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocol Access | Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <style>
+        .login-box {
+            background: rgba(13, 13, 25, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.8rem;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+            margin: 10px 0;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .login-input:focus {
+            border-color: var(--primary);
+        }
+        .error-msg {
+            color: var(--primary);
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor-follower" id="cursor"></div>
+    <div class="noise"></div>
+    
+    <nav class="navbar">
+        <div class="nav-inner">
+            <div class="logo-area">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="nav-logo">
+                <span class="logo-text">AI Food Advisor</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="login-box reveal">
+            <h2 style="font-family: 'Outfit', sans-serif; margin-bottom: 10px;">Security Check</h2>
+            <p style="color: #a0a0c0; font-size: 0.9rem;">Enter administrative credentials to continue.</p>
+            
+            <input type="text" id="username" class="login-input" placeholder="Username">
+            
+            <div style="position: relative;">
+                <input type="password" id="password" class="login-input" placeholder="Password">
+                <span id="toggleVisibility" onclick="togglePassword()" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; opacity: 0.5; font-size: 1.2rem;">👁️</span>
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="attemptLogin()">Authorize Access</button>
+            <div id="error" class="error-msg">Invalid Credentials. Access Denied.</div>
+            
+            <p style="margin-top: 20px;"><a href="/" class="nav-link" style="font-size: 0.85rem;">Return to Base</a></p>
+        </div>
+    </div>
+
+    <script>
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
+        });
+
+        function togglePassword() {
+            const passInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleVisibility');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                toggleIcon.style.opacity = '1';
+                toggleIcon.textContent = '👓';
+            } else {
+                passInput.type = 'password';
+                toggleIcon.style.opacity = '0.5';
+                toggleIcon.textContent = '👁️';
+            }
+        }
+
+        async function attemptLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const error = document.getElementById('error');
+            
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    error.style.display = 'block';
+                    document.getElementById('password').value = '';
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Connection failed.");
+            }
+        }
+        
+        // Allow enter key
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') attemptLogin();
+        });
+        document.getElementById('username').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') attemptLogin();
+        });
+    </script>
+</body>
+</html>

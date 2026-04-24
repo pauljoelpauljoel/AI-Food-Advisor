@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Advisor | Intelligence on your plate</title>
+    <meta name="description" content="Discover restaurants and get AI-powered food recommendations based on your budget and preferences.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+        
+        /* Custom Cursor Style */
+        .cursor-follower {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 107, 107, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease, background 0.3s ease;
+            backdrop-filter: invert(1);
+            mix-blend-mode: difference;
+        }
+
+        /* Noise Texture */
+        .noise {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 10000;
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor-follower" id="cursor"></div>
+    <div class="noise"></div>
+
+    <video autoplay muted loop playsinline class="video-bg">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-top-view-of-pizzas-and-various-foods-on-a-table-3420-large.mp4" type="video/mp4">
+    </video>
+
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-inner">
+            <div class="logo-area">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="AI Food Advisor Logo" class="nav-logo">
+                <span class="logo-text">AI Food Advisor</span>
+            </div>
+            <div class="nav-links">
+                <!-- Buttons removed as per user request -->
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Savor the Paradox.</h1>
+            <p class="hero-p">Where high-performance intelligence meets the art of dining. Discover surgical-precision recommendations and AI-forged menus tailored to your exact fiscal and culinary profile.</p>
+            <div class="cta-group">
+                <button onclick="openAuth()" class="btn btn-primary">Begin Sequence</button>
+                <a href="#features" class="btn btn-secondary">System Protocols</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+            <div class="arrow">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="feature-card">
+            <div class="feature-icon">💎</div>
+            <h3>Gemini-Forged Palettes</h3>
+            <p>Our proprietary neural engine crafts distinct culinary identities for every venue, ensuring no two menus are ever identical.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">👁️</div>
+            <h3>Sentinel Map Grid</h3>
+            <p>Navigate a real-time, interactive ecosystem of local gastronomy with our precision-mapped restaurant database.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Fiscal Flavor Optimization</h3>
+            <p>Advanced greedy algorithms synthesize your budget, group size, and hunger metrics to deliver the ultimate outcome.</p>
+        </div>
+    </section>
+
+    <section class="comparison">
+        <h2 class="section-title">System Capabilities</h2>
+        <div class="capabilities-grid">
+            <div class="cap-card reveal">
+                <div class="cap-icon">📍</div>
+                <h3>Map-Based Smart Selection</h3>
+                <p>Skip the lists. Click directly on any spatial location to explore intelligence-driven food options.</p>
+            </div>
+            
+            <div class="cap-card reveal">
+                <div class="cap-icon">🍱</div>
+                <h3>Smart Group Recommendations</h3>
+                <p>Engineered for scale. Intelligently distributes food for groups of 10, 20, or 40+ members with ease.</p>
+            </div>
+            
+            <div class="cap-card reveal">
+                <div class="cap-icon">💰</div>
+                <h3>Budget-Based Optimization</h3>
+                <p>Generates complete meal plans within your exact budget limits. No manual math, just maximum value.</p>
+            </div>
+
+            <div class="cap-card reveal">
+                <div class="cap-icon">🍽️</div>
+                <h3>Variety-Based Suggestions</h3>
+                <p>Our algorithm prevents repetition, ensuring a balanced mix of meals, snacks, and sides every time.</p>
+            </div>
+
+            <div class="cap-card reveal">
+                <div class="cap-icon">🕒</div>
+                <h3>Meal-Time Intelligence</h3>
+                <p>Automatically filters for Breakfast, Lunch, or Dinner based on context-aware time metrics.</p>
+            </div>
+
+            <div class="cap-card reveal">
+                <div class="cap-icon">🧠</div>
+                <h3>Location-Aware AI</h3>
+                <p>Synthesizes regional data to provide hyper-relevant suggestions (e.g. Idli in South India, Roti in North India).</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; Your budget |Your people | Our AI plan | AI Food Advisor | Precision Dining Intelligence</p>
+    </footer>
+
+    <!-- User Authentication Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="auth-box">
+            <h2 id="authTitle" style="font-family: 'Outfit'; margin-bottom: 10px;">Welcome Back</h2>
+            <p id="authSubtitle" style="color: #a0a0c0; font-size: 0.9rem;">Sign in to unlock your personalized AI dining experience.</p>
+            
+            <div style="margin: 2rem 0 1rem;">
+                <input type="text" id="userUsername" placeholder="Username" style="width: 100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:1rem; border-radius:12px; color:white; outline:none; margin-bottom:1rem; text-align:center;">
+                <input type="password" id="userPassword" placeholder="Password" style="width: 100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:1rem; border-radius:12px; color:white; outline:none; text-align:center;">
+            </div>
+            
+            <button id="authBtn" class="btn btn-primary" style="width: 100%;" onclick="attemptUserAuth()">Continue Sequence</button>
+            <div id="authError" style="color: #ff6b6b; font-size: 0.8rem; margin-top: 10px; display: none;">Invalid credentials</div>
+            
+            <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #a0a0c0;">
+                <span id="toggleText">Don't have an account?</span> 
+                <a href="#" onclick="toggleAuthMode()" id="toggleBtn" style="color: var(--primary); text-decoration: none; font-weight: 600;">Sign Up</a>
+            </p>
+            
+            <p style="margin-top: 20px;"><a href="#" onclick="closeAuth()" class="nav-link" style="font-size: 0.85rem;">Cancel Initialization</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.navbar');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Scroll Reveal Logic
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Typing Effect Helper
+        const typeText = (element, text, speed = 50) => {
+            let i = 0;
+            element.innerHTML = '';
+            const timer = setInterval(() => {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(timer);
+                }
+            }, speed);
+        };
+
+        window.onload = () => {
+            const p = document.querySelector('.hero-p');
+            const originalText = p.textContent;
+            typeText(p, originalText, 30);
+        };
+
+        // Custom Cursor Logic
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
+        });
+
+        // 3D Tilt Effect logic
+        document.querySelectorAll('.feature-card, .hero-content').forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(${el.classList.contains('reveal') ? 0 : 30}px)`;
+            });
+            
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(${el.classList.contains('reveal') ? 0 : 30}px)`;
+            });
+        });
+
+        const authModal = document.getElementById('authModal');
+        function openAuth() {
+            authModal.classList.add('active');
+        }
+        function closeAuth() {
+            authModal.classList.remove('active');
+        }
+        function mockGoogleLogin() {
+            // Deprecated
+        }
+
+        let isLoginMode = true;
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            const title = document.getElementById('authTitle');
+            const subtitle = document.getElementById('authSubtitle');
+            const btn = document.getElementById('authBtn');
+            const toggleText = document.getElementById('toggleText');
+            const toggleBtn = document.getElementById('toggleBtn');
+            const error = document.getElementById('authError');
+
+            error.style.display = 'none';
+            
+            if (isLoginMode) {
+                title.innerText = "Welcome Back";
+                subtitle.innerText = "Sign in to unlock your personalized AI dining experience.";
+                btn.innerText = "Continue Journey";
+                toggleText.innerText = "Don't have an account?";
+                toggleBtn.innerText = "Sign Up";
+            } else {
+                title.innerText = "Join the Club";
+                subtitle.innerText = "Discover surgical-precision menus tailored just for you.";
+                btn.innerText = "Create Account";
+                toggleText.innerText = "Already registered?";
+                toggleBtn.innerText = "Sign In";
+            }
+        }
+
+        async function attemptUserAuth() {
+            const username = document.getElementById('userUsername').value;
+            const password = document.getElementById('userPassword').value;
+            const error = document.getElementById('authError');
+            const endpoint = isLoginMode ? '/api/user/login' : '/api/user/signup';
+            
+            if (!username || !password) {
+                error.innerText = "Fields cannot be empty";
+                error.style.display = 'block';
+                return;
+            }
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    window.location.href = "/app";
+                } else {
+                    error.innerText = data.error || "Authentication failed";
+                    error.style.display = 'block';
+                    document.getElementById('userPassword').value = '';
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Connection failed.");
+            }
+        }
+    </script>
+</body>
+</html>

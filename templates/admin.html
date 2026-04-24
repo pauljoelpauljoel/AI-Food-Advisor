@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | AI Food Advisor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body class="admin-body">
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-icon">🔐</span>
+      <div>
+        <h1>Admin Control</h1>
+        <p>Restaurant Database Management</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="/" class="btn-ghost">View Site</a>
+    </div>
+  </div>
+</header>
+
+<main class="admin-grid">
+  <!-- Sidebar: Legend & Controls -->
+  <aside class="admin-sidebar">
+    <div class="card">
+      <h3>🛠️ Add Restaurant</h3>
+      <p class="muted">Click anywhere on the map to drop a pin and landmark a new restaurant.</p>
+      
+      <div id="hotelForm" class="hidden">
+        <hr class="divider">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="newHotelName" placeholder="e.g. Royal Curry House">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="newHotelDesc" rows="3" placeholder="Briefly describe the cuisine or vibe..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="newHotelCategory">
+            <option value="Restaurant">Restaurants</option>
+            <option value="Coffee">Coffee & Juice</option>
+            <option value="Mall">Malls</option>
+            <option value="Veg">Veg Hotel</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Google Maps URL (Optional)</label>
+          <input type="text" id="newHotelMapsUrl" placeholder="Paste link from Google Maps...">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Opening Time</label>
+            <input type="time" id="newHotelOpening" value="09:00">
+          </div>
+          <div class="form-group">
+            <label>Closing Time</label>
+            <input type="time" id="newHotelClosing" value="22:00">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Coordinates</label>
+          <div id="coordsDisplay" class="coords-box">Click on map to pick...</div>
+        </div>
+        <button class="btn-primary" onclick="saveHotel()">Save to Database</button>
+        <button class="btn-ghost" onclick="cancelAdd()" style="margin-top: 8px; width: 100%;">Cancel</button>
+      </div>
+
+      <div id="selectionHint" class="selection-hint">
+        <div class="hint-icon">📍</div>
+        <p>Waiting for map selection...</p>
+      </div>
+
+      <!-- Edit Hotel Info Form -->
+      <div id="editHotelForm" class="hidden">
+        <hr class="divider">
+        <h3>✏️ Edit Restaurant Info</h3>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="editHotelName">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="editHotelDesc" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="editHotelCategory">
+            <option value="Restaurant">Restaurants</option>
+            <option value="Coffee">Coffee & Juice</option>
+            <option value="Mall">Malls</option>
+            <option value="Veg">Veg Hotel</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Google Maps URL</label>
+          <input type="text" id="editHotelMapsUrl">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Opening Time</label>
+            <input type="time" id="editHotelOpening">
+          </div>
+          <div class="form-group">
+            <label>Closing Time</label>
+            <input type="time" id="editHotelClosing">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Coordinates (Click map to move pin)</label>
+          <div id="editCoordsDisplay" class="coords-box">...</div>
+        </div>
+        <button class="btn-primary" onclick="updateHotel()">Update Info</button>
+        <button class="btn-ghost" onclick="closeHotelEditor()" style="margin-top: 8px; width: 100%;">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Menu Editor Card (Hidden by default) -->
+    <div id="menuEditorCard" class="card hidden">
+      <div class="card-header-row">
+        <h3>🍴 Manage Menu</h3>
+        <button class="btn-close" onclick="closeMenuEditor()">×</button>
+      </div>
+      <p id="editingHotelName" class="editing-name"></p>
+      
+      <div class="manual-entry">
+        <div class="form-group">
+          <label>Item Name</label>
+          <input type="text" id="manualItemName" placeholder="e.g. Masala Dosa">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Type</label>
+            <select id="manualItemType">
+              <option value="Veg">Veg</option>
+              <option value="Non-veg">Non-veg</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Price (₹)</label>
+            <input type="number" id="manualItemPrice" value="100">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Meal Type</label>
+          <select id="manualItemMeal">
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dinner">Dinner</option>
+            <option value="All Day">All Day</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="addManualItem()">Add Item</button>
+      </div>
+
+      <div class="menu-list-admin" id="menuItemsList">
+        <!-- Loaded via JS -->
+      </div>
+
+      <hr class="divider">
+      <div class="danger-zone">
+        <button class="btn-danger" onclick="confirmClearMenu()">🗑️ Clear All Items</button>
+        <p class="muted small">This will delete all cached menu items for this restaurant.</p>
+      </div>
+    </div>
+
+    <div class="card scrollable">
+      <h3>🏛️ Existing Venues</h3>
+      <div id="hotelList" class="hotel-list">
+        <!-- Loaded via JS -->
+      </div>
+    </div>
+  </aside>
+
+  <!-- Map Panel -->
+  <section class="admin-map-container">
+    <div id="adminMap"></div>
+    <div class="map-overlay">
+      <span class="badge badge-live">Live Sync</span>
+    </div>
+  </section>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Smart Food Recommendation System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="cursor-follower" id="cursor"></div>
+<div class="noise"></div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" class="app-logo">
+      <div>
+        <h1>AI Food Advisor</h1>
+        <p>Smart Restaurant & Menu Intelligence</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <a href="/admin" class="badge" style="text-decoration:none">⚙️ Admin Control</a>
+    </div>
+  </div>
+</header>
+
+<div class="quick-filters">
+  <button class="filter-btn active" onclick="filterByCategory('all')">📍 All</button>
+  <button class="filter-btn" onclick="showNearby()">🏠 Nearby Restaurants</button>
+  <button class="filter-btn" onclick="filterByCategory('Coffee')">☕ Coffee & Juice</button>
+  <button class="filter-btn" onclick="filterByCategory('Veg')">🥗 Veg Hotels</button>
+  <button class="filter-btn" onclick="filterByCategory('Mall')">🛍️ Malls</button>
+</div>
+
+<main class="app-grid">
+
+  <!-- LEFT: Map Panel -->
+  <section class="panel panel-map">
+    <div class="panel-header">
+      <h2>🗺️ Discover Restaurants</h2>
+      <div class="search-box">
+        <input type="text" id="hotelSearch" placeholder="Search restaurant name..." oninput="searchHotels()" />
+        <div id="searchResults" class="search-results hidden"></div>
+      </div>
+    </div>
+    <div id="map"></div>
+  </section>
+
+  <!-- RIGHT: Side Panel -->
+  <aside class="side-panel">
+
+    <!-- Hotel Info -->
+    <div class="card card-hotel hidden" id="hotelCard">
+      <div class="hotel-info">
+        <div class="hotel-icon">🏨</div>
+        <div>
+          <h3 id="hotelName">—</h3>
+          <p id="hotelDesc" class="muted">Select a restaurant on the map</p>
+          <div class="hotel-meta-row">
+            <span id="hotelCity" class="city-tag"></span>
+            <a id="googleMapsLink" href="#" target="_blank" class="gmaps-link hidden">🌐 View on Maps</a>
+          </div>
+          <div id="hotelTiming" class="hotel-timing hidden">
+             <span class="timing-badge">🕒 <span id="openingTime"></span> - <span id="closingTime"></span></span>
+          </div>
+        </div>
+      </div>
+      <div id="menuStatus" class="menu-status"></div>
+    </div>
+
+    <!-- Menu Loading -->
+    <div class="card loading-card hidden" id="menuLoading">
+      <div class="loading-spinner"></div>
+      <div>
+        <strong>Fetching menu from internet...</strong>
+        <p class="muted">AI is generating a unique menu for this restaurant</p>
+      </div>
+    </div>
+
+    <!-- Menu Preview -->
+    <div class="card hidden" id="menuPreviewCard">
+      <div class="card-header-row">
+        <h3>📋 Menu Preview</h3>
+        <span id="menuSource" class="source-badge"></span>
+      </div>
+      <div id="menuTabs" class="tabs"></div>
+      <div id="menuList" class="menu-list"></div>
+    </div>
+
+    <!-- Preference Form -->
+    <div class="card hidden" id="prefCard">
+      <h3>🎯 Your Preferences</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>💰 Budget (₹)</label>
+          <input type="number" id="budget" value="500" min="50" step="50" />
+        </div>
+        <div class="form-group">
+          <label>👥 Members</label>
+          <input type="number" id="members" value="2" min="1" max="20" />
+        </div>
+        <div class="form-group">
+          <label>🥗 Food Preference</label>
+          <select id="preference">
+            <option value="Both">Both</option>
+            <option value="Veg">Veg Only</option>
+            <option value="Non-veg">Non-veg Only</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>🔥 Hunger Level</label>
+          <select id="hunger">
+            <option value="Medium">Medium</option>
+            <option value="Low">Light</option>
+            <option value="High">Very Hungry</option>
+          </select>
+        </div>
+        <div class="form-group full-width">
+          <label>🕐 Meal Type</label>
+          <div class="meal-toggle" id="mealToggle">
+            <button class="meal-btn active" data-val="Breakfast">🌅 Breakfast</button>
+            <button class="meal-btn" data-val="Lunch">☀️ Lunch</button>
+            <button class="meal-btn" data-val="Dinner">🌙 Dinner</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn-recommend" id="recommendBtn" onclick="getRecommendations()">
+        ✨ Get AI Recommendations
+      </button>
+    </div>
+
+    <!-- Recommendations Output -->
+    <div class="card hidden" id="resultCard">
+      <h3>🤖 AI Recommendations</h3>
+      <div id="resultMessage" class="result-message"></div>
+      <div id="resultItems" class="result-items"></div>
+      <div class="result-summary" id="resultSummary"></div>
+      
+      <!-- AI Refinement Chatbox -->
+      <div class="refine-chat-area">
+        <div class="refine-header">
+          <span class="refine-icon">💬</span>
+          <span>Refine your selection</span>
+        </div>
+        <div id="refineHistory" class="refine-history"></div>
+        <div class="refine-input-group">
+          <input type="text" id="refineInput" placeholder="Ex: I want starters, make it spicy..." />
+          <button id="refineBtn" onclick="refineRecommendations()">Refine</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🗺️</div>
+      <h3>Pick a Restaurant</h3>
+      <p>Click any marker on the map to start your food journey</p>
+    </div>
+
+  </aside>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

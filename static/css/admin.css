@@ -1,0 +1,237 @@
+.admin-body {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  grid-template-rows: 1fr;
+  height: calc(100vh - 65px); /* Same header height as main */
+  background: var(--bg);
+}
+
+.admin-sidebar {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.admin-map-container {
+  position: relative;
+  min-height: 0;
+}
+
+#adminMap {
+  width: 100%;
+  height: 100%;
+}
+
+.hotel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hotel-item {
+  background: var(--bg3);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hotel-item-info h4 {
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.hotel-item-info p {
+  font-size: 0.75rem;
+  color: var(--text3);
+}
+
+.form-group textarea {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  width: 100%;
+  resize: none;
+}
+
+.coords-box {
+  background: var(--bg);
+  padding: 10px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--accent);
+  border: 1px dashed var(--border2);
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 15px 0;
+}
+
+.selection-hint {
+  text-align: center;
+  padding: 30px 10px;
+  opacity: 0.6;
+}
+
+.hint-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.scrollable {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.scrollable .hotel-list {
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.map-overlay {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Menu Editor Styles */
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.editing-name {
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.danger-zone {
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(220, 53, 69, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.small {
+    font-size: 0.75rem;
+}
+
+.hotel-item-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.menu-list-admin {
+    margin: 15px 0;
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
+}
+
+.admin-menu-item {
+    background: var(--bg);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-menu-item .item-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-menu-item .item-info strong {
+    font-size: 0.85rem;
+    color: var(--text);
+}
+
+.admin-menu-item .item-info span {
+    font-size: 0.72rem;
+    color: var(--text3);
+}
+
+.item-ops {
+    display: flex;
+    gap: 4px;
+}
+
+.btn-sm {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+}
+
+.btn-danger-text {
+    background: none;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    color: #dc3545;
+    cursor: pointer;
+}
+.btn-danger-text:hover {
+    background: rgba(220, 53, 69, 0.1);
+}
