@@ -116,7 +116,6 @@ def init_db():
     for q in queries:
         execute_query(q)
 
-init_db()
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 def reverse_geocode(lat, lng):
