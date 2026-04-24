@@ -77,6 +77,11 @@ def execute_query(query, params=(), fetch=None, commit=True):
             return {"id": cur.lastrowid}
             
         return res
+    except Exception as e:
+        print(f"QUERY ERROR: {e} | Query: {query} | Params: {params}")
+        if commit:
+            conn.rollback()
+        raise e
     finally:
         conn.close()
 
@@ -103,8 +108,8 @@ def init_db():
             name TEXT NOT NULL,
             food_type TEXT NOT NULL,
             price REAL NOT NULL,
-            calories INTEGER NOT NULL,
-            meal_type TEXT NOT NULL
+            calories INTEGER,
+            meal_type TEXT
         );""",
         f"""CREATE TABLE IF NOT EXISTS users (
             id {pk_type},
